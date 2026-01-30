@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Picsart Contacts</title>
+  <style>
+    :root{
+      --bg:#0f0f1a;
+      --card:#161629;
+      --muted:#a3a3c2;
+      --text:#ffffff;
+      --accent1:#8a2be2;   /* electric purple */
+      --accent2:#ff4fd8;   /* magenta */
+      --accent3:#00c2ff;   /* cyan */
+      --success:#19c37d;
+      --danger:#ff5c5c;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+    .hero{
+      background: radial-gradient(1200px 600px at -10% -20%, rgba(255,79,216,0.35), transparent 60%),
+                  radial-gradient(900px 500px at 110% -10%, rgba(0,194,255,0.35), transparent 60%),
+                  linear-gradient(135deg, #201136, #0f0f1a 60%);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .hero__content{max-width:980px;margin:0 auto;padding:48px 20px 36px}
+    .hero h1{margin:0 0 8px;font-size:32px}
+    .hero p{margin:0;color:var(--muted)}
+    .container{max-width:980px;margin:24px auto;padding:0 20px}
+    .card{
+      background:linear-gradient(180deg, rgba(138,43,226,0.10), rgba(255,79,216,0.08)) padding-box,
+                 linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) border-box;
+      border:1px solid transparent;border-radius:var(--radius);padding:18px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    }
+    .hidden{display:none}
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{
+      background:#1d1d34;color:var(--muted);border:1px solid rgba(255,255,255,0.08);
+      padding:8px 12px;border-radius:10px;cursor:pointer
+    }
+    .tab.active{background:linear-gradient(135deg, var(--accent1), var(--accent2));color:#0b0014}
+    .form{display:none}
+    .form--active{display:block}
+    .form__row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    input{
+      background:#121225;border:1px solid rgba(255,255,255,0.08);color:var(--text);
+      padding:10px 12px;border-radius:10px;outline:none
+    }
+    input:focus{border-color:var(--accent3);box-shadow:0 0 0 3px rgba(0,194,255,0.15)}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:none;padding:10px 14px;border-radius:10px;color:#0b0014;cursor:pointer;font-weight:600
+    }
+    .btn--primary{background:linear-gradient(135deg, var(--accent1), var(--accent3))}
+    .btn--secondary{background:linear-gradient(135deg, var(--accent2), var(--accent1))}
+    .btn--ghost{background:transparent;border:1px solid rgba(255,255,255,0.16);color:var(--text)}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .token{display:flex;align-items:center;gap:8px}
+    code{background:#1b1930;padding:4px 6px;border-radius:8px;border:1px solid rgba(255,255,255,0.08)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+    .contact{
+      background:#14142a;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;
+    }
+    .contact h4{margin:0 0 6px}
+    .meta{color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:4px}
+    .toast{
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:22px;background:#14142a;border:1px solid rgba(255,255,255,0.12);
+      padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4)
+    }
+    .footer{color:var(--muted);text-align:center;margin:24px 0 36px}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <h1>Picsart Contacts</h1>
+      <p>Register, login, and manage your contacts</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="authSection" class="card">
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Login</button>
+        <button class="tab" data-tab="register">Register</button>
+      </div>
+
+      <form id="loginForm" class="form form--active">
+        <div class="form__row">
+          <label>Username</label>
+          <input type="text" name="username" required />
+        </div>
+        <div class="form__row">
+          <label>Password</label>
+          <input type="password" name="password" required />
+        </div>
+        <button class="btn btn--primary" type="submit">Login</button>
+      </form>
+
+      <form id="registerForm" class="form">
+        <div class="form__row">
+          <label>Username</label>
+          <input type="text" name="username" required />
+        </div>
+        <div class="form__row">
+          <label>Password</label>
+          <input type="password" name="password" required />
+        </div>
+        <button class="btn btn--secondary" type="submit">Register</button>
+      </form>
+    </section>
+
+    <section id="appSection" class="card hidden">
+      <div class="topbar">
+        <div class="token">
+          <span id="tokenLabel">Token: </span>
+          <code id="tokenValue">-</code>
+          <button id="copyToken" class="btn btn--ghost" type="button">Copy</button>
+        </div>
+        <button id="logoutBtn" class="btn btn--ghost" type="button">Logout</button>
+      </div>
+
+      <form id="addContactForm" class="form row">
+        <input placeholder="Name *" name="name" required />
+        <input placeholder="Email" name="email" />
+        <input placeholder="Phone" name="phone" />
+        <button class="btn btn--primary" type="submit">Add</button>
+      </form>
+
+      <div id="contacts" class="grid"></div>
+    </section>
+
+    <div id="toast" class="toast hidden"></div>
+  </main>
+
+  <footer class="footer">Made with 💜 inspired by Picsart colors</footer>
+
+  <script>
+    // Change to 5000 if your server runs on that port
+    const baseUrl = 'http://localhost:5050';
+
+    const els = {
+      authSection: document.getElementById('authSection'),
+      appSection: document.getElementById('appSection'),
+      tabs: document.querySelectorAll('.tab'),
+      loginForm: document.getElementById('loginForm'),
+      registerForm: document.getElementById('registerForm'),
+      tokenValue: document.getElementById('tokenValue'),
+      copyToken: document.getElementById('copyToken'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      addContactForm: document.getElementById('addContactForm'),
+      contacts: document.getElementById('contacts'),
+      toast: document.getElementById('toast'),
+    };
+
+    let token = localStorage.getItem('token') || '';
+
+    function showToast(msg, type='info'){
+      els.toast.textContent = msg;
+      els.toast.classList.remove('hidden');
+      els.toast.style.borderColor = type==='error' ? 'rgba(255,92,92,0.5)' : 'rgba(0,194,255,0.5)';
+      setTimeout(()=>els.toast.classList.add('hidden'), 2500);
+    }
+
+    function setToken(t){
+      token = t || '';
+      if (token) localStorage.setItem('token', token); else localStorage.removeItem('token');
+      els.tokenValue.textContent = token ? token.slice(0,12)+'…' : '-';
+    }
+
+    function updateView(){
+      const authed = !!token;
+      els.authSection.classList.toggle('hidden', authed);
+      els.appSection.classList.toggle('hidden', !authed);
+    }
+
+    async function api(path, { method='GET', body, auth=false }={}){
+      const headers = { 'Content-Type':'application/json' };
+      if (auth && token) headers['x-auth-token'] = token;
+      const res = await fetch(baseUrl + path, {
+        method, headers, body: body ? JSON.stringify(body) : undefined
+      });
+      const data = await res.json().catch(()=> ({}));
+      if (!res.ok) throw new Error(data.msg || ('HTTP ' + res.status));
+      return data;
+    }
+
+    async function loadContacts(){
+      try{
+        const list = await api('/api/contacts', { auth:true });
+        renderContacts(list);
+      }catch(err){
+        showToast(err.message, 'error');
+        if (/401/.test(err.message)) { setToken(''); updateView(); }
+      }
+    }
+
+    function renderContacts(list){
+      els.contacts.innerHTML = '';
+      if (!list || !list.length){
+        els.contacts.innerHTML = '<div class="meta">No contacts yet. Add one!</div>';
+        return;
+      }
+      for (const c of list){
+        const card = document.createElement('div');
+        card.className = 'contact';
+        card.innerHTML = `
+          <h4>${escapeHtml(c.name)}</h4>
+          <div class="meta">
+            <span>${c.email ? escapeHtml(c.email) : '—'}</span>
+            <span>${c.phone ? escapeHtml(c.phone) : '—'}</span>
+          </div>
+        `;
+        els.contacts.appendChild(card);
+      }
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Tabs
+    els.tabs.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        els.tabs.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.dataset.tab;
+        document.querySelectorAll('.form').forEach(f=>f.classList.remove('form--active'));
+        document.getElementById(id+'Form').classList.add('form--active');
+      });
+    });
+
+    // Register
+    els.registerForm.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const form = new FormData(e.target);
+      try{
+        await api('/api/auth/register', {
+          method:'POST',
+          body:{ username: form.get('username'), password: form.get('password') }
+        });
+        showToast('Registered. Now login.');
+        document.querySelector('.tab[data-tab="login"]').click();
+      }catch(err){ showToast(err.message, 'error'); }
+    });
+
+    // Login
+    els.loginForm.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const form = new FormData(e.target);
+      try{
+        const { token: t } = await api('/api/auth/login', {
+          method:'POST',
+          body:{ username: form.get('username'), password: form.get('password') }
+        });
+        setToken(t); updateView(); loadContacts();
+        showToast('Logged in');
+      }catch(err){ showToast(err.message, 'error'); }
+    });
+
+    // Copy token
+    els.copyToken.addEventListener('click', async ()=>{
+      if (!token) return;
+      await navigator.clipboard.writeText(token);
+      showToast('Token copied');
+    });
+
+    // Logout
+    els.logoutBtn.addEventListener('click', ()=>{
+      setToken(''); updateView();
+    });
+
+    // Add contact
+    els.addContactForm.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const form = new FormData(e.target);
+      try{
+        await api('/api/contacts', {
+          method:'POST', auth:true,
+          body:{ name: form.get('name'), email: form.get('email'), phone: form.get('phone') }
+        });
+        e.target.reset();
+        loadContacts();
+        showToast('Contact added');
+      }catch(err){ showToast(err.message, 'error'); }
+    });
+
+    // Init
+    (function init(){
+      setToken(token);
+      updateView();
+      if (token) loadContacts();
+    })();
+  </script>
+</body>
+</html>
